@@ -1,0 +1,35 @@
+---
+- name: Run bash script and send CSV files to Python script on Ubuntu servers
+  hosts: "{{ ansible_limit | default(omit) }}"
+  become: yes
+  become_method: sudo
+  tasks:
+
+    - name: Run the bash script and save output to a file
+      script: /root/playbooks/external_scripts/syscheck_new.sh
+      ignore_errors: false
+
+    - name: Find the CSV files on the remote server
+      find:
+        paths: /tmp/
+        patterns: "{{ ansible_hostname }}*.csv"
+      register: csv_files
+
+    - name: Fetch the CSV files
+      fetch:
+        src: "{{ item.path }}"
+        dest: "/tmp/"
+        flat: yes
+      loop: "{{ csv_files.files }}"
+
+    - name: Run Python script on the control node with the fetched JSON file
+      delegate_to: localhost
+      shell: python3 /root/playbooks/external_scripts/syscheck_csv_to_html.py /tmp/{{ ansible_hostname }}_system_info.csv /tmp/{{ ansible_hostname }}_log_issues.csv /tmp/{{ ansible_hostname }}_recommendations.csv
+      args:
+        chdir: /root/www
+  
+          #- name: Remove the CSV files from the remote server
+          #  file:
+          #    path: "{{ item.path }}"
+          #    state: absent
+          #  loop: "{{ csv_files.files }}"

@@ -1,0 +1,7 @@
+REDhat
+useradd ithinkauser
+usermod -aG wheel ithinkauser
+passwd ithinkauser
+80VqW!5th|2$14Y[@!
+visudo
+ithinkauser        ALL=(ALL)       NOPASSWD: ALL
