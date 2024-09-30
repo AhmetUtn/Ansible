@@ -9,7 +9,7 @@ fqdn=$(hostname -f)   # Tam nitelikli DNS ismi (FQDN)
 ip_address=$(hostname -I | xargs)  # IP adresi (xargs boşlukları temizler)
 
 # Sistemin dağıtımını öğren (Ubuntu mu Debian mı Red Hat mı?)
-distro=$(lsb_release -is 2>/dev/null || cat /etc/os-release | grep '^ID=' | cut -d'=' -f2 | tr -d '"')
+distro=$(cat /etc/os-release | grep '^ID=' | cut -d'=' -f2 | tr -d '"' || echo "Unknown")
 
 # Sürüm bilgisini al
 if [[ "$distro" == "Ubuntu" ]]; then
@@ -31,6 +31,7 @@ load_averages=$(uptime | awk -F'load average:' '{print $2}' | xargs)
 load_1_min=$(echo $load_averages | awk '{print $1}' | sed 's/,//g')
 load_5_min=$(echo $load_averages | awk '{print $2}' | sed 's/,//g')
 load_15_min=$(echo $load_averages | awk '{print $3}' | sed 's/,//g')
+
 
 # Recommendations dizisini başlat
 declare -a recommendations
@@ -206,6 +207,16 @@ start_date=$(date --date="15 days ago" +"%Y-%m-%d")
 end_date=$(date +"%Y-%m-%d")
 
 log_files=(
+    "/var/log/messages"         # Genel sistem mesajları
+    "/var/log/secure"           # Güvenlik ve kimlik doğrulama ile ilgili kayıtlar
+    "/var/log/maillog"          # E-posta sunucusu logları
+    "/var/log/cron"             # Cron işlerinin logları
+    "/var/log/boot.log"         # Sistem başlangıç logları
+    "/var/log/dmesg"            # Donanım bilgileri ve kernel mesajları
+    "/var/log/audit/audit.log"  # Audit kayıtları (güvenlik için)
+    "/var/log/httpd/access_log" # Apache erişim logları
+    "/var/log/httpd/error_log"  # Apache hata logları
+    "/var/log/yum.log"          # Yum paket yöneticisi logları
     "/var/log/syslog"
     "/var/log/auth.log"
     "/var/log/kern.log"
