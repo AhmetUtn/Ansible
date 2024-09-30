@@ -12,7 +12,7 @@ ip_address=$(hostname -I | xargs)  # IP adresi (xargs boşlukları temizler)
 distro=$(cat /etc/os-release | grep '^ID=' | cut -d'=' -f2 | tr -d '"' || echo "Unknown")
 
 # Sürüm bilgisini al
-if [[ "$distro" == "Ubuntu" ]]; then
+if [[ "$distro" == "Ubuntu" || "$distro" == "ubuntu" ]]; then
     version=$(lsb_release -rs)
 elif [[ "$distro" == "Debian" ]]; then
     version=$(cat /etc/debian_version | cut -d '.' -f1)
