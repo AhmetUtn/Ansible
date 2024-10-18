@@ -92,7 +92,7 @@ check_version () {
   esac
 }
 
-# Sistemin yaşam döngüsü durumu
+g# Sistemin yaşam döngüsü durumu
 support_message=$(check_version "$version")
 
 # Disk Kullanım Kontrolü
