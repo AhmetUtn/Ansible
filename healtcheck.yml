@@ -1,13 +1,13 @@
 ---
 - name: Run bash script and send CSV files to Python script on Ubuntu servers
-  hosts: "{{ ansible_limit | default(omit) }}"
+  hosts: "{{ ansible_limit | default(all) }}"
   become: yes
   become_method: sudo
   tasks:
 
     - name: Run the bash script and save output to a file
-      script: /root/playbooks/external_scripts/syscheck_new.sh
-      ignore_errors: false
+      script: /home/ahmet/Ansible/syscheck_new.sh
+      ignore_errors: false 
 
     - name: Find the CSV files on the remote server
       find:
@@ -24,12 +24,13 @@
 
     - name: Run Python script on the control node with the fetched JSON file
       delegate_to: localhost
-      shell: python3 /root/playbooks/external_scripts/syscheck_csv_to_html.py /tmp/{{ ansible_hostname }}_system_info.csv /tmp/{{ ansible_hostname }}_log_issues.csv /tmp/{{ ansible_hostname }}_recommendations.csv
+      shell: python3 /home/ahmet/Ansible/syscheck_csv_to_html.py /tmp/{{ ansible_hostname }}_system_info.csv /tmp/{{ ansible_hostname }}_log_issues.csv /tmp/{{ ansible_hostname }}_recommendations.csv
       args:
-        chdir: /root/www
+        chdir: /home/ahmet/www
   
-          #- name: Remove the CSV files from the remote server
-          #  file:
-          #    path: "{{ item.path }}"
-          #    state: absent
-          #  loop: "{{ csv_files.files }}"
+    - name: Remove the CSV files from the remote server (optional)
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ csv_files.files }}"
+      when: csv_files.matched > 0

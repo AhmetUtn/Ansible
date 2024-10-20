@@ -5,3 +5,5 @@ passwd ithinkauser
 80VqW!5th|2$14Y[@!
 visudo
 ithinkauser        ALL=(ALL)       NOPASSWD: ALL
+
+ansible-playbook -i hosts.ini healtcheck.yml -e ansible_limit=all
